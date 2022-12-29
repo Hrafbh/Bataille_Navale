@@ -2,14 +2,17 @@ import sqlalchemy
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from Game import get_id
+from game import Game
+from player import Player
+from vessel import Vessel
+
 
 engine = sqlalchemy.create_engine('sqlite:////tmp/tdlog.db', echo=True, future=True)
 Base = declarative_base(bind=engine)
 Session = sessionmaker(bind=engine)
 
 
-class GameEntity(Base):
+class GameEntity(a):
     __tablename__ = 'game'
     id = Column(Integer, primary_key=True)
     players = relationship("PlayerEntity", back_populates="game",
@@ -65,11 +68,43 @@ class WeaponEntity(Base):
     vessel = relationship("VesselEntity", back_populates="weapon")
 
 
+
+def map_to_game_entity(game: Game) -> GameEntity:
+    game_entity = GameEntity()
+    game_entity.id = game.get_id()
+    game_entity.players = game.get_players()
+    return game_entity
+
+def map_to_game(self, game_entity: GameEntity) ->Game:
+    game = Game()
+    game.get_id = game_entity.id
+    game.get_players = game_entity.players
+    return game
+
+def map_to_player_entity(player: Player) ->PlayerEntity:
+    player_entity = PlayerEntity()
+    player_entity.id = player.id
+    player_entity.name = player.name
+    player_entity.battle_field = player.battle_field
+    return player_entity
+
+def map_to_vessel_entity(vessel: Vessel) ->VesselEntity:
+     vessel_entity = VesselEntity()
+     vessel_entity.coord_x = vessel.coordinates[0]
+     vessel_entity.coord_y = vessel.coordinates[1]
+     vessel_entity.coord_z = vessel.coordinates[2]
+     vessel_entity.hits_to_be_destroyed = vessel.hits_to_be_destroyed
+     vessel_entity.weapon = vessel.weapon
+     return vessel_entity
+
+
+
+
 class GameDao:
     def __init__(self):
         Base.metadata.create_all()
         self.db_session = Session()
-
+    
     def create_game(self, game: Game) -> int:
         game_entity = map_to_game_entity(game)
         self.db_session.add(game_entity)
@@ -93,23 +128,6 @@ class GameDao:
         self.db_session.commit()
         return vessel_entity.id
 
-    @staticmethod
-    def map_to_game_entity(game: Game) -> GameEntity:
-        game_entity = GameEntity()
-        game_entity.id = game.get_id()
-        game_entity.players = game.get_players()
-        return game_entity
+    
 
-    def map_to_game(self, game_entity: GameEntity) ->Game:
-        game = Game()
-        game.get_id() = game_entity.id
-        game.get_players() = game_entity.players
-        pass
 
-    def map_to_player_entity(player):
-        # à implementer
-        pass
-
-    def map_to_vessel_entity(vessel):
-        # à implementer
-        pass
