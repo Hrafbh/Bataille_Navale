@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<link rel="stylesheet" href="styles/style.css">
+<head>
+ <meta charset="utf-8">
+ <link rel="icon" type="image/x-icon" href="images/favicon.ico">
+ <title>Créer un Game</title>
+</head>
+<body>
+<div class="vertical-container">
+ <div class="form-result" id="create-game-result"></div>
+ <div class="centered-form">
+ <form id="create-game-form">
+ <label for="player-name">Ton pseudo:</label><br>
+ <input type="text" id="player-name" name="player_name" required><br><br>
+ <h5>Les dimensions de l'espace de jeu</h5>
+ <label for="min-x">Xmin:</label><br>
+ <input type="number" id="min-x" name="min_x" required value="0"><br>
+ <label for="max-x">Xmax:</label><br>
+ <input type="number" id="max-x" name="max_x" required value="40"><br>
+ <label for="min-y">Ymin:</label><br>
+ <input type="number" id="min-y" name="min_y" required value="0"><br>
+ <label for="max-y">Ymax:</label><br>
+ <input type="number" id="max-y" name="max_y" required value="40"><br>
+ <label for="min-z">Zmin:</label><br>
+ <input type="number" id="min-z" name="min_z" required value="-1"><br>
+ <label for="max-z">Zmax:</label><br>
+ <input type="number" id="max-z" name="max_z" required value="1"><br><br>
+ <input class="submit-button" type="submit" value="Valider">
+ </form>
+ </div>
+</div>
+<script src="scripts/create-game.js"></script>
+</body>
+</html>

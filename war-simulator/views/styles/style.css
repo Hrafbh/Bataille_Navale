@@ -1,0 +1,44 @@
+.centered-element {
+ margin-left: 20%;
+ margin-right: auto;
+ background-color: #BFBEBE;
+ padding: 15px;
+ width: 120px;
+}
+
+
+.vertical-container {
+ display: flex;
+ flex-direction: column;
+}
+.centered-form {
+ padding: 15px;
+ margin-left: 80px;
+}
+input {
+ padding: 5px;
+ border: 2px solid #ccc;
+ border-radius: 5px;
+}
+input:focus {
+ border-color: #333;
+}
+.submit-button {
+ padding: 5px 15px;
+ background: #ccc;
+ border: 0 none;
+ cursor: pointer;
+ border-radius: 5px;
+}
+.submit-button:hover {
+ background: #828080;
+}
+.submit-button:focus {
+ background: #8d7979;
+}
+.form-result {
+ visibility: hidden;
+ position: absolute;
+ margin-top: 5%;
+ margin-left: 10%;
+}
