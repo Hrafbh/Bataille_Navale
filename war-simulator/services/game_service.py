@@ -17,12 +17,15 @@ class GameService:
         return self.game_dao.create_game(game)
 
     def join_game(self, game_id: int, player_name: str) -> bool:
-        self.game_dao.find_game(game_id).add_player(Player(player_name))
-        return print(str(player_name)+" added to "+str(game_id))
+        join = False
+        if Player(player_name,) in self.game_dao.find_game(game_id).players:
+            return join
+        else:
+            join = True
+            self.game_dao.find_game(game_id).add_player(Player(player_name,))
+            return join
         
     def get_game(self, game_id: int) -> Game:
-        self.game_dao.find_game(game_id).get_id
-        self.game_dao.find_game(game_id).get_players
         return self.game_dao.find_game(game_id)
 
 
