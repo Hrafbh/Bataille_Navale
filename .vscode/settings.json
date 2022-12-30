@@ -1,5 +1,6 @@
 {
     "python.analysis.extraPaths": [
-        "./war-simulator/model"
+        "./war-simulator/model",
+        "./war-simulator/dao"
     ]
 }

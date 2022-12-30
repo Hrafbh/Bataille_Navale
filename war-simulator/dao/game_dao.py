@@ -1,4 +1,3 @@
-import sqlalchemy
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
@@ -7,12 +6,12 @@ from player import Player
 from vessel import Vessel
 
 
-engine = sqlalchemy.create_engine('sqlite:////tmp/tdlog.db', echo=True, future=True)
+engine = create_engine('sqlite:////tmp/tdlog.db', echo=True, future=True)
 Base = declarative_base(bind=engine)
 Session = sessionmaker(bind=engine)
 
 
-class GameEntity(a):
+class GameEntity(Base):
     __tablename__ = 'game'
     id = Column(Integer, primary_key=True)
     players = relationship("PlayerEntity", back_populates="game",
@@ -32,8 +31,8 @@ class PlayerEntity(Base):
 class BattlefieldEntity(Base):
     __tablename__ = 'battlefield'
     id = Column(Integer, primary_key=True)
-    min_x = Column(Integer, nullable=True)
-    min_y = Column(Integer, nullable=True)
+    min_x = Column(Integer, nullable=False)
+    min_y = Column(Integer, nullable=False)
     min_z = Column(Integer, nullable=True)
     max_x = Column(Integer, nullable=True)
     max_y = Column(Integer, nullable=True)
@@ -69,35 +68,6 @@ class WeaponEntity(Base):
 
 
 
-def map_to_game_entity(game: Game) -> GameEntity:
-    game_entity = GameEntity()
-    game_entity.id = game.get_id()
-    game_entity.players = game.get_players()
-    return game_entity
-
-def map_to_game(self, game_entity: GameEntity) ->Game:
-    game = Game()
-    game.get_id = game_entity.id
-    game.get_players = game_entity.players
-    return game
-
-def map_to_player_entity(player: Player) ->PlayerEntity:
-    player_entity = PlayerEntity()
-    player_entity.id = player.id
-    player_entity.name = player.name
-    player_entity.battle_field = player.battle_field
-    return player_entity
-
-def map_to_vessel_entity(vessel: Vessel) ->VesselEntity:
-     vessel_entity = VesselEntity()
-     vessel_entity.coord_x = vessel.coordinates[0]
-     vessel_entity.coord_y = vessel.coordinates[1]
-     vessel_entity.coord_z = vessel.coordinates[2]
-     vessel_entity.hits_to_be_destroyed = vessel.hits_to_be_destroyed
-     vessel_entity.weapon = vessel.weapon
-     return vessel_entity
-
-
 
 
 class GameDao:
@@ -106,7 +76,7 @@ class GameDao:
         self.db_session = Session()
     
     def create_game(self, game: Game) -> int:
-        game_entity = map_to_game_entity(game)
+        game_entity = self.map_to_game_entity(game)
         self.db_session.add(game_entity)
         self.db_session.commit()
         return game_entity.id
@@ -114,19 +84,82 @@ class GameDao:
     def find_game(self, game_id: int) -> Game:
         stmt = select(GameEntity).where(GameEntity.id == game_id)
         game_entity = self.db_session.scalars(stmt).one()
-        return map_to_game(game_entity)
+        return self.map_to_game(game_entity)
 
     def create_player(self, player: Player) -> int:
-        player_entity = map_to_player_entity(player)
+        player_entity = self.map_to_player_entity(player)
         self.db_session.add(player_entity)
         self.db_session.commit()
         return player_entity.id
 
+    def find_player(self, player_name: str) ->Player:   
+        stmt = select(PlayerEntity).where(PlayerEntity.name == player_name)
+        player_entity = self.db_session.scalars(stmt).one()
+        return self.map_to_player(player_entity)
+
     def create_vessel(self, vessel: Vessel) -> int:
-        vessel_entity = map_to_vessel_entity(vessel)
+        vessel_entity = self.map_to_vessel_entity(vessel)
         self.db_session.add(vessel_entity)
         self.db_session.commit()
         return vessel_entity.id
+
+    def find_vessel(self, x: float, y: float, z: float) ->Vessel: 
+        stmt = select(VesselEntity).where(VesselEntity.coord_x == x and VesselEntity.coord_y == y and VesselEntity.coord_z == z) 
+        vessel_entity = self.db_session.scalars(stmt).one()
+        return self.map_to_game(vessel_entity)
+
+
+
+
+    @staticmethod
+    def map_to_game_entity(game: Game) -> GameEntity:
+        game_entity = GameEntity()
+        game_entity.id = game.get_id()
+        game_entity.players = game.get_players()
+        return game_entity
+    @staticmethod
+    def map_to_game(game_entity: GameEntity) ->Game:
+        game = Game()
+        game.get_id = game_entity.id
+        game.get_players = game_entity.players
+        return game
+
+
+    @staticmethod
+    def map_to_player_entity(player: Player) ->PlayerEntity:
+        player_entity = PlayerEntity()
+        player_entity.id = player.id
+        player_entity.name = player.name
+        player_entity.battle_field = player.battle_field
+        return player_entity
+    @staticmethod
+    def map_to_player(player_entity: PlayerEntity) ->Player: 
+        player = Player()
+        player.id = player_entity.id
+        player.name = player_entity.name   
+        player.battle_field = player_entity.battle_field
+        return player
+
+
+    @staticmethod
+    def map_to_vessel_entity(vessel: Vessel) ->VesselEntity:
+        vessel_entity = VesselEntity()
+        vessel_entity.coord_x = vessel.coordinates[0]
+        vessel_entity.coord_y = vessel.coordinates[1]
+        vessel_entity.coord_z = vessel.coordinates[2]
+        vessel_entity.hits_to_be_destroyed = vessel.hits_to_be_destroyed
+        vessel_entity.weapon = vessel.weapon
+        return vessel_entity    
+    @staticmethod
+    def map_to_vessel(vessel_entity: VesselEntity) ->Vessel:
+        vessel = Vessel()
+        vessel. coordinates[0] = vessel_entity.coord_x
+        vessel. coordinates[1] = vessel_entity.coord_y
+        vessel. coordinates[2] = vessel_entity.coord_z
+        vessel.hits_to_be_destroyed = vessel_entity.hits_to_be_destroyed
+        vessel.weapon = vessel_entity.weapon
+        return vessel
+
 
     
 
